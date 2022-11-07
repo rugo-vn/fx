@@ -51,8 +51,7 @@ const opts = {
 Arguments:
 
 - `path` path to the file to run (could format as request url)
-- `schema` file schema to search file
-- `schemas` schemas for run model code
+- `model` file model to get code (should `fs` model)
 - `locals` locals to bin to code
 
 ## License

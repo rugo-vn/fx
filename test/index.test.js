@@ -4,8 +4,7 @@ import { createBroker } from '@rugo-vn/service';
 import { expect } from 'chai';
 
 const DEFAULT_ARGS = {
-  schema: { _name: 'demo' },
-  schemas: [],
+  model: 'demo',
 }
 
 describe('model test', () => {
