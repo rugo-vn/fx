@@ -1,6 +1,6 @@
 import { FsId } from '@rugo-vn/service';
 
-export const run = async function ({ path: filePath, model, locals = {} }) {
+export const run = async function ({ appId, path: filePath, model, locals = {} }) {
   const getFn = async function (nextFilePath) {
     const fileId = FsId.fromPath(nextFilePath);
 
@@ -11,12 +11,13 @@ export const run = async function ({ path: filePath, model, locals = {} }) {
 
   const modelFn = function (name) {
     const that = this;
+    const modelName = appId ? `${appId}.${name}` : name;
     return {
       async get (id) {
-        return await that.call('model.get', { name, id });
+        return await that.call('model.get', { name: modelName, id });
       },
-      async find (query) {
-        return await that.call('model.find', { name, query });
+      async find (args) {
+        return await that.call('model.find', { ...args, name: modelName });
       }
     };
   };
