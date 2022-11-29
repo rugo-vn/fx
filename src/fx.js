@@ -1,6 +1,6 @@
 import { parse } from 'path';
 import ejs from 'ejs';
-import { RugoException } from '@rugo-vn/service';
+import { RugoException } from '@rugo-vn/exception';
 import { clone, mergeDeepLeft } from 'ramda';
 
 /**
