@@ -4,19 +4,7 @@ Rugo Fx for running code.
 
 ## Overview
 
-A code runner.
-
-## Settings
-
-```js
-const settings = {
-  fx: {
-    locals: {
-      /* local variable to bind to code run */,
-    }
-  }
-}
-```
+It requires `@rugo-vn/storage`.
 
 ## Common
 
@@ -44,6 +32,58 @@ const opts = {
 }
 ```
 
+### Input Args
+
+All action must have:
+
+- `spaceId`
+- `driveName`
+
+## Actions
+
+### `run`
+
+Arguments:
+
+- `entry`: Path to start run code.
+- `locals` locals to bind to code
+
+## Default Locals
+
+### `table`
+
+```js
+const data = await table(tableName).actionName(args);
+```
+
+It will call `db.<action>`, with inherit `spaceId`.
+
+## License
+
+MIT.
+
+
+<!-- 
+## Overview
+
+A code runner.
+
+## Settings
+
+```js
+const settings = {
+  fx: {
+    locals: {
+      /* local variable to bind to code run */,
+    }
+  }
+}
+```
+
+## Common
+
+
+
 ## Actions
 
 ### `run`
@@ -56,4 +96,4 @@ Arguments:
 
 ## License
 
-MIT
+MIT -->

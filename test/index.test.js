@@ -4,10 +4,11 @@ import { createBroker } from '@rugo-vn/service';
 import { expect } from 'chai';
 
 const DEFAULT_ARGS = {
-  model: 'demo',
+  spaceId: 'demo',
+  driveName: 'foo',
 }
 
-describe('model test', () => {
+describe('test', () => {
   let broker;
 
   before(async () => {
@@ -15,7 +16,7 @@ describe('model test', () => {
     broker = createBroker({
       _services: [
         './src/index.js',
-        './test/model.service.js',
+        './test/storage.service.js',
       ],
     });
 
@@ -29,7 +30,7 @@ describe('model test', () => {
 
   it('should run code', async () => {
     const res = await broker.call('fx.run', {
-      path: 'index.js',
+      entry: 'index.js',
       ...DEFAULT_ARGS,
     });
     
@@ -38,7 +39,7 @@ describe('model test', () => {
 
   it('should run include code', async () => {
     const res = await broker.call('fx.run', {
-      path: 'include.ejs',
+      entry: 'include.ejs',
       ...DEFAULT_ARGS,
     });
     

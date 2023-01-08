@@ -5,13 +5,11 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
-    "doc": "jsdoc2md **/*.js > docs/API.md",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint": "npm run lint:fix",
     "test": "mocha",
-    "coverage": "c8 npm run test",
-    "pre-commit": "npm run lint && npm run coverage && npm run doc"
+    "coverage": "c8 npm run test"
   },
   "author": "Vu Anh Hao <hi@haova.me> (https://www.haova.me)",
   "license": "MIT",
@@ -22,15 +20,15 @@
     "eslint": "^8.14.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-jsdoc": "^39.2.9",
-    "jsdoc-to-markdown": "^7.1.1",
     "mocha": "^10.0.0",
     "moleculer": "^0.14.21",
     "mongodb-memory-server": "^8.5.2",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "temp": "^0.9.4"
   },
   "dependencies": {
-    "@rugo-vn/service": "../service",
     "@rugo-vn/exception": "../exception",
+    "@rugo-vn/service": "../service",
     "ejs": "^3.1.8",
     "ramda": "^0.28.0"
   }
