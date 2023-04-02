@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { mergeDeepLeft } from 'ramda';
 import { Secure } from '@rugo-vn/shared';
 
@@ -30,6 +31,7 @@ export const run = async function ({ id, entry, locals, spaceId }) {
       ...locals,
       table: tableFn.bind(this),
       Secure,
+      moment,
     },
   });
 };

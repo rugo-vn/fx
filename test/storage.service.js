@@ -5,7 +5,7 @@ import temp from 'temp';
 export const name = 'storage';
 
 export const actions = {
-  get ({ path: filePath }) {
+  get({ path: filePath }) {
     let content = '';
 
     switch (filePath) {
@@ -14,7 +14,8 @@ export const actions = {
         break;
 
       case 'include.ejs':
-        content = 'Total is: <%= await include(\'index.js\') %>';
+        content =
+          'Total is: <%= await include(\'index.js\') %> at <%= moment(new Date("2020/12/13")).format("YYYY.MM.DD") %>';
         break;
     }
 
@@ -24,5 +25,5 @@ export const actions = {
     return {
       data: FileCursor(tmpPath),
     };
-  }
+  },
 };

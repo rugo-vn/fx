@@ -1,6 +1,6 @@
 {
   "name": "@rugo-vn/fx",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "./src/index.js",
   "type": "module",
@@ -33,6 +33,7 @@
     "@rugo-vn/service": "^2.0.2",
     "@rugo-vn/shared": "^1.0.0",
     "ejs": "^3.1.8",
+    "moment": "^2.29.4",
     "ramda": "^0.28.0"
   }
 }

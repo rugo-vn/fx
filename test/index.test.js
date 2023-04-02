@@ -6,7 +6,7 @@ import { expect } from 'chai';
 const DEFAULT_ARGS = {
   spaceId: 'demo',
   driveName: 'foo',
-}
+};
 
 describe('test', () => {
   let broker;
@@ -14,10 +14,7 @@ describe('test', () => {
   before(async () => {
     // create broker
     broker = createBroker({
-      _services: [
-        './src/index.js',
-        './test/storage.service.js',
-      ],
+      _services: ['./src/index.js', './test/storage.service.js'],
     });
 
     await broker.loadServices();
@@ -33,7 +30,7 @@ describe('test', () => {
       entry: 'index.js',
       ...DEFAULT_ARGS,
     });
-    
+
     expect(res).to.be.eq(6);
   });
 
@@ -42,7 +39,7 @@ describe('test', () => {
       entry: 'include.ejs',
       ...DEFAULT_ARGS,
     });
-    
-    expect(res).to.be.eq(`Total is: 6`);
+
+    expect(res).to.be.eq(`Total is: 6 at 2020.12.13`);
   });
 });
