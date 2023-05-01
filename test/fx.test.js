@@ -1,19 +1,7 @@
-/* eslint-disable */
+import { assert, expect } from 'chai';
+import { Fx } from '../src/fx.js';
 
-import { expect } from "chai";
-import { Fx } from "../src/fx.js";
-
-const SAMPLE_INLINE_CODE = `
-  await (new Promise((resolve) => {
-    setTimeout(() => { resolve(123) }, 100);
-  }));
-`;
-
-const SAMPLE_BLOCK_CODE = `
-const a = 100;
-const b = 20;
-const c = 3;
-
+const SAMPLE_JS_CODE = `
 return a + b + c;
 `;
 
@@ -29,68 +17,85 @@ const SAMPLE_EJS_CODE = `
 </html>
 `;
 
-const SAMPLE_INCLUDE_JS = `
-const code = await include('two.ejs', { c: 3 });
-
-return '200 OK ' + code;
+const INCLUDE_JS_CODE = `
+  return 'js-' + await include(next.value);
 `;
 
-describe('Fx test', () => {
-  it('should run directly', async () => {
-    // inline
-    const res = await Fx.run(SAMPLE_INLINE_CODE, { mode: 'inline'} );
-    expect(res).to.be.eq(123);
+const INCLUDE_EJS_CODE = `ejs-<%- await include(next.value, { next: next.next }) %>`;
 
-    // block
-    const res2 = await Fx.run(SAMPLE_BLOCK_CODE);
-    expect(res2).to.be.eq(123);
-  });
+const ERROR_JS_CODE = `throw new Error('something wrong');`;
 
-  it('should run in instance', async () => {
-    const fx = new Fx();
-    
-    // inline
-    const res = await fx.run(SAMPLE_INLINE_CODE, { mode: 'inline'} );
-    expect(res).to.be.eq(123);
-
-    // block
-    const res2 = await fx.run(SAMPLE_BLOCK_CODE);
-    expect(res2).to.be.eq(123);
-  });
-
-  it('should run ejs', async () => {
-    const res = await Fx.run(SAMPLE_EJS_CODE, { type: 'ejs', locals: { a: 100, b: 20, c: 3 } });
-    expect(res).to.be.eq(`\n<html>\n  <head>\n    <title>49 years later.</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n`);
-  });
-
-  it('should run file mode', async () => {
+describe('Fx test', function () {
+  it('should run with global opts', async () => {
     const fx = new Fx({
-      async get(name) {
-        if (name === 'one.js') {
-          return SAMPLE_INCLUDE_JS;
-        }
-
-        return SAMPLE_EJS_CODE;
+      files: {
+        'a.js': SAMPLE_JS_CODE,
+        'b.ejs': SAMPLE_EJS_CODE,
       },
-      locals: {
-        a: 100,
-        b: 20,
-        c: 9
-      }
-    })
-    
-    const res = await fx.run(`one.js`, { mode: 'file', locals: { c: 5 } });
-    expect(res).to.be.eq(`200 OK \n<html>\n  <head>\n    <title>49 years later.</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n`);
-  });
-
-  it('should locals', async () => {
-    const fx = new Fx({
-      locals: {
-        a: 100, b: 20, c: 9
-      }
+      locals: { a: 100, b: 20, c: 3 },
     });
 
-    const res = await fx.run(`a + b + c`, { mode: 'inline', locals: { c: 3 } });
+    const res = await fx.run('a.js');
     expect(res).to.be.eq(123);
+
+    const res2 = await fx.run('b.ejs');
+    expect(res2).to.be.eq(
+      `\n<html>\n  <head>\n    <title>49 years later.</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n`
+    );
+  });
+
+  it('should run with local opts', async () => {
+    const fx = new Fx();
+
+    const res = await fx.run('a.js', {
+      files: {
+        'a.js': SAMPLE_JS_CODE,
+        'b.ejs': SAMPLE_EJS_CODE,
+      },
+      locals: { a: 100, b: 20, c: 3 },
+    });
+    expect(res).to.be.eq(123);
+
+    const res2 = await fx.run('b.ejs', {
+      files: {
+        'a.js': SAMPLE_JS_CODE,
+        'b.ejs': SAMPLE_EJS_CODE,
+      },
+      locals: { a: 100, b: 20, c: 3 },
+    });
+    expect(res2).to.be.eq(
+      `\n<html>\n  <head>\n    <title>49 years later.</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n`
+    );
+  });
+
+  it('should include', async () => {
+    const fx = new Fx({
+      files: {
+        'a.js': SAMPLE_JS_CODE,
+        'b.js': INCLUDE_JS_CODE,
+        'c.ejs': INCLUDE_EJS_CODE,
+      },
+      locals: { a: 100, b: 20, c: 3 },
+    });
+
+    const res = await fx.run('c.ejs', {
+      locals: { next: { value: 'b.js', next: { value: 'a.js' } } },
+    });
+    expect(res).to.be.eq('ejs-js-123');
+  });
+
+  it('should throw error', async () => {
+    const fx = new Fx({
+      files: {
+        'a.js': ERROR_JS_CODE,
+      },
+    });
+
+    try {
+      await fx.run('a.js');
+      assert.fail('should error');
+    } catch (e) {
+      expect(e).to.has.property('message', 'something wrong');
+    }
   });
 });

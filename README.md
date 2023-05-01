@@ -2,98 +2,35 @@
 
 Rugo Fx for running code.
 
-## Overview
-
-It requires `@rugo-vn/storage`.
-
-## Common
-
-### Fx
-
-Fx Service using Fx class to run code.
+## Usage
 
 ```js
-const fx = new Fx(/* globals opts */);
-const res = await fx.run(nameOrCode, opts);
-
-/* or */
-Fx.run(nameOrCode, opts);
-
+const fx = new Fx(globalOpts);
+const res = await fx.run('filePath', localOpts);
 ```
 
-About `opts`:
+- `globalOpts` will merged with `localOpts` when run with `localOpts` high priority.
 
 ```js
 const opts = {
-  async get(name){ /* get fn, must return code } */ },
-  locals: { /* locals in code run */ },
-  mode: /* some of mode `block` or `inline` or `file`, default `block` */,
-  type: /* type of code `js` or `ejs`, default `js` */,
-}
+  files: {
+    '/path/to/file/a': 'file_content',
+    '/path/to/file/b': 'file_content',
+    '/path/to/file/c': 'file_content',
+  },
+  locals: {
+    'name': /* module that you want to bind */
+  }
+};
 ```
 
-### Input Args
+We both support `.js` and `.ejs` file, and determine these file in the path.
 
-All action must have:
+- `.js` return value.
+- `.ejs` return entire file as string after render.
 
-- `spaceId`
-- `driveName`
-
-## Actions
-
-### `run`
-
-Arguments:
-
-- `entry`: Path to start run code.
-- `locals` locals to bind to code
-
-## Default Locals
-
-### `table`
-
-```js
-const data = await table(tableName).actionName(args);
-```
-
-It will call `db.<action>`, with inherit `spaceId`.
+You can execute another file by `await include('filePath', locals)`.
 
 ## License
 
 MIT.
-
-
-<!-- 
-## Overview
-
-A code runner.
-
-## Settings
-
-```js
-const settings = {
-  fx: {
-    locals: {
-      /* local variable to bind to code run */,
-    }
-  }
-}
-```
-
-## Common
-
-
-
-## Actions
-
-### `run`
-
-Arguments:
-
-- `path` path to the file to run (could format as request url)
-- `model` file model to get code (should `fs` model)
-- `locals` locals to bin to code
-
-## License
-
-MIT -->
