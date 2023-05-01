@@ -1,45 +1,43 @@
-/* eslint-disable */
-
-import { createBroker } from '@rugo-vn/service';
+import { spawnService } from '@rugo-vn/service';
+import { pack } from '@rugo-vn/service/src/wrap.js';
 import { expect } from 'chai';
 
-const DEFAULT_ARGS = {
-  spaceId: 'demo',
-  driveName: 'foo',
-};
-
-describe('test', () => {
-  let broker;
-
-  before(async () => {
-    // create broker
-    broker = createBroker({
-      _services: ['./src/index.js', './test/storage.service.js'],
+describe('Service test', function () {
+  let service;
+  it('should spawn servier', async () => {
+    service = await spawnService({
+      name: 'fx',
+      exec: ['node', './src/index.js'],
+      cwd: './',
+      async hook(addr, args, opts) {
+        return await pack(() => opts.data);
+      },
+      settings: {
+        allows: ['calc'],
+      },
     });
 
-    await broker.loadServices();
-    await broker.start();
+    await service.start();
   });
 
-  after(async () => {
-    await broker.close();
+  it('should call run', async () => {
+    const res = await service.call(
+      'run',
+      {
+        entry: 'a.js',
+        files: {
+          'a.js': 'return await call("calc")',
+        },
+      },
+      {
+        data: 'hello',
+      }
+    );
+
+    expect(res).to.be.eq('hello');
   });
 
-  it('should run code', async () => {
-    const res = await broker.call('fx.run', {
-      entry: 'index.js',
-      ...DEFAULT_ARGS,
-    });
-
-    expect(res).to.be.eq(6);
-  });
-
-  it('should run include code', async () => {
-    const res = await broker.call('fx.run', {
-      entry: 'include.ejs',
-      ...DEFAULT_ARGS,
-    });
-
-    expect(res).to.be.eq(`Total is: 6 at 2020.12.13`);
+  it('should stop', async () => {
+    await service.stop();
   });
 });

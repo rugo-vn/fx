@@ -1,13 +1,30 @@
+import { defineAction } from '@rugo-vn/service';
+import { mergeDeepLeft } from 'ramda';
 import { Fx } from './fx.js';
 
-export const name = 'fx';
+let allows = [];
 
-export * as actions from './actions.js';
-export * as hooks from './hooks.js';
+defineAction('start', async function (settings) {
+  allows = settings.allows || [];
+});
 
-export const started = async function () {
-  this.fx = new Fx({
-    mode: 'file',
-    // locals: path(['settings', 'fx', 'locals'], this)
-  });
-};
+defineAction('run', async function (args) {
+  const filePath = args.entry;
+  const fx = new Fx(
+    mergeDeepLeft(
+      {
+        locals: {
+          call: (addr, args, opts) => {
+            if (allows.indexOf(addr) === -1)
+              throw new Error(`Fx do not allow to call ${addr}`);
+
+            return this.call(addr, args, opts);
+          },
+        },
+      },
+      args
+    )
+  );
+
+  return await fx.run(filePath);
+});

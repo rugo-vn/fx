@@ -8,7 +8,7 @@ return a + b + c;
 const SAMPLE_EJS_CODE = `
 <html>
   <head>
-    <title><%= 7 * 7 %> years later.</title>
+    <title><%= 7 * 7 %> years later <%= fn() %></title>
   </head>
   <body>
     <%= 'hello world'.toUpperCase() %>
@@ -32,7 +32,14 @@ describe('Fx test', function () {
         'a.js': SAMPLE_JS_CODE,
         'b.ejs': SAMPLE_EJS_CODE,
       },
-      locals: { a: 100, b: 20, c: 3 },
+      locals: {
+        a: 100,
+        b: 20,
+        c: 3,
+        fn() {
+          return 'x';
+        },
+      },
     });
 
     const res = await fx.run('a.js');
@@ -40,7 +47,7 @@ describe('Fx test', function () {
 
     const res2 = await fx.run('b.ejs');
     expect(res2).to.be.eq(
-      `\n<html>\n  <head>\n    <title>49 years later.</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n`
+      `\n<html>\n  <head>\n    <title>49 years later x</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n`
     );
   });
 
@@ -61,10 +68,17 @@ describe('Fx test', function () {
         'a.js': SAMPLE_JS_CODE,
         'b.ejs': SAMPLE_EJS_CODE,
       },
-      locals: { a: 100, b: 20, c: 3 },
+      locals: {
+        a: 100,
+        b: 20,
+        c: 3,
+        fn() {
+          return 'x';
+        },
+      },
     });
     expect(res2).to.be.eq(
-      `\n<html>\n  <head>\n    <title>49 years later.</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n`
+      `\n<html>\n  <head>\n    <title>49 years later x</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n`
     );
   });
 

@@ -31,6 +31,33 @@ We both support `.js` and `.ejs` file, and determine these file in the path.
 
 You can execute another file by `await include('filePath', locals)`.
 
+## Service
+
+We can also fx with service.
+
+```js
+const res = await service.call(
+  'run',
+  {
+    entry: 'filePath',
+    ...otherFxOpts,
+  },
+  opts
+);
+```
+
+We provide `call` methods that you want to communicate other action's service.
+
+**Settings**
+
+```js
+const settings = {
+  allows: [
+    /* white list of action to want fx context to execute */
+  ],
+};
+```
+
 ## License
 
 MIT.
