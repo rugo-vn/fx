@@ -2,7 +2,7 @@ import { assert, expect } from 'chai';
 import { Fx } from '../src/fx.js';
 
 const SAMPLE_JS_CODE = `
-return a + b + c;
+return _.add(a, b) + c;
 `;
 
 const SAMPLE_EJS_CODE = `
@@ -111,5 +111,28 @@ describe('Fx test', function () {
     } catch (e) {
       expect(e).to.has.property('message', 'something wrong');
     }
+  });
+
+  it('should hook test', async () => {
+    const fx = new Fx({
+      files: {
+        'a.js': SAMPLE_JS_CODE,
+        'b.ejs': SAMPLE_EJS_CODE,
+      },
+      hooks: {
+        before: 'var a = 100, b = 20, c = 3;',
+        after: 'return $pre + 1;',
+      },
+      locals: {
+        fn() {
+          return 'x';
+        },
+      },
+    });
+
+    expect(await fx.run('a.js')).to.be.eq(124);
+    expect(await fx.run('b.ejs')).to.be.eq(
+      `\n<html>\n  <head>\n    <title>49 years later x</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n1`
+    );
   });
 });
