@@ -14,6 +14,9 @@ describe('Service test', function () {
       },
       settings: {
         allows: ['calc'],
+        hooks: {
+          after: 'return $pre + 1;',
+        },
       },
     });
 
@@ -34,7 +37,7 @@ describe('Service test', function () {
       }
     );
 
-    expect(res).to.be.eq('hello');
+    expect(res).to.be.eq('hello1');
   });
 
   it('should stop', async () => {
