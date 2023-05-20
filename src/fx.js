@@ -63,29 +63,29 @@ Fx.run = async function (filePath, opts = {}) {
 
   const hooks = clone(opts.hooks || {});
   for (const name in hooks) {
-    locals[name] = await runFn(`return ${hooks[name]}`, {
-      ...baseLocals,
-      locals
-    }, this);
+    locals[name] = await runFn(
+      `return ${hooks[name]}`,
+      {
+        ...baseLocals,
+        locals
+      },
+      this
+    );
   }
 
   if (ext === '.js') {
     const pre = await runFn(code, {
       ...baseLocals,
-      locals 
+      locals
     });
 
     return pre;
   }
 
   if (ext === '.ejs') {
-    const pre = await ejs.render(
-      code,
-      mergeDeepLeft(baseLocals, locals),
-      {
-        async: true,
-      }
-    );
+    const pre = await ejs.render(code, mergeDeepLeft(baseLocals, locals), {
+      async: true
+    });
     return pre;
   }
 

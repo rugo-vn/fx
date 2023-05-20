@@ -5,6 +5,7 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
+    "prettier:format": "prettier --config .prettierrc '**/*.js' --write",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint": "npm run lint:fix",
@@ -20,10 +21,13 @@
     "chai": "^4.3.6",
     "dotenv": "^16.0.1",
     "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-jsdoc": "^39.2.9",
+    "eslint-plugin-prettier": "^4.2.1",
     "mocha": "^10.0.0",
     "mongodb-memory-server": "^8.5.2",
+    "prettier": "^2.8.8",
     "rimraf": "^3.0.2",
     "temp": "^0.9.4"
   },

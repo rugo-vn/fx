@@ -12,8 +12,8 @@ defineAction('run', async function (args) {
   delete args.hooks; // only allow hooks from the setting
 
   const filePath = args.entry;
-  const fx = new Fx(mergeDeepLeft({ hooks }, args ));
+  const fx = new Fx(mergeDeepLeft({ hooks }, args));
   fx.call = this.call;
-  
+
   return await fx.run(filePath);
 });

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { spawnService } from '@rugo-vn/service';
 import { pack } from '@rugo-vn/service/src/wrap.js';
 import { assert, expect } from 'chai';
@@ -14,9 +16,9 @@ describe('Service test', function () {
       },
       settings: {
         hooks: {
-          greet: (async (name) => await this.call(name) + 1).toString()
-        },
-      },
+          greet: (async (name) => (await this.call(name)) + 1).toString()
+        }
+      }
     });
 
     await service.start();
@@ -28,11 +30,11 @@ describe('Service test', function () {
       {
         entry: 'a.js',
         files: {
-          'a.js': 'return await greet("calc")',
-        },
+          'a.js': 'return await greet("calc")'
+        }
       },
       {
-        data: 'hello',
+        data: 'hello'
       }
     );
 
@@ -46,15 +48,15 @@ describe('Service test', function () {
         {
           entry: 'a.js',
           files: {
-            'a.js': 'return this.call("calc")',
-          },
+            'a.js': 'return this.call("calc")'
+          }
         },
         {
-          data: 'hello',
+          data: 'hello'
         }
       );
       assert.fail('should error');
-    } catch(err) {
+    } catch (err) {
       expect(err).to.has.property('message', 'this.call is not a function');
     }
   });
