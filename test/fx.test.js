@@ -113,26 +113,15 @@ describe('Fx test', function () {
     }
   });
 
-  it('should hook test', async () => {
-    const fx = new Fx({
-      files: {
-        'a.js': SAMPLE_JS_CODE,
-        'b.ejs': SAMPLE_EJS_CODE,
-      },
-      hooks: {
-        before: 'var a = 100, b = 20, c = 3;',
-        after: 'return $pre + 1;',
-      },
-      locals: {
-        fn() {
-          return 'x';
-        },
-      },
-    });
+  it('should convert function to string', async () => {
+    const obj = {
+      fn: async (name) => {
+        return await this.call(name);
+      }
+    }
 
-    expect(await fx.run('a.js')).to.be.eq(124);
-    expect(await fx.run('b.ejs')).to.be.eq(
-      `\n<html>\n  <head>\n    <title>49 years later x</title>\n  </head>\n  <body>\n    HELLO WORLD\n    123\n  </body>\n</html>\n1`
-    );
+    const fnStr = obj.fn.toString().trim();
+
+    expect(fnStr).to.be.eq('async (name) => {\n        return await this.call(name);\n      }');
   });
 });

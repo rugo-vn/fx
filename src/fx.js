@@ -19,10 +19,11 @@ Fx.run = async function (filePath, opts = {}) {
   const locals = clone(opts.locals || {});
   const files = opts.files || {};
   const ext = extname(filePath);
+
   let code = files[filePath];
 
-  const before = opts.hooks?.before || '';
-  const after = opts.hooks?.after || '';
+  // const before = opts.hooks?.before || '';
+  // const after = opts.hooks?.after || '';
 
   if (!code) throw new Error(`File ${filePath} was not found`);
 
@@ -31,7 +32,7 @@ Fx.run = async function (filePath, opts = {}) {
     return this.run(nextPath, mergeDeepLeft({ locals: nextLocals }, opts));
   }.bind(this);
 
-  const runFn = async function (code, args) {
+  const runFn = async function (code, args, that = {}) {
     const Ctor = new Function('return (async function(){}).constructor;')(); // eslint-disable-line
 
     code =
@@ -55,50 +56,36 @@ Fx.run = async function (filePath, opts = {}) {
     for (const name of paramNames) params.push(args[name]);
 
     const fn = new Ctor(paramNames.join(', '), code);
-    return await fn.apply({}, params);
+    return await fn.apply(that, params);
   };
 
-  if (ext === '.js') {
-    if (before) code = before + '\n' + code;
-    const pre = await runFn(code, {
-      include,
-      rethrow,
-      locals,
-      moment,
-      _: lodash,
-    });
+  const baseLocals = { include, moment, rethrow, _: lodash };
 
-    if (after)
-      return await runFn(after, {
-        include,
-        rethrow,
-        locals,
-        moment,
-        _: lodash,
-        $pre: pre,
-      });
+  const hooks = clone(opts.hooks || {});
+  for (const name in hooks) {
+    locals[name] = await runFn(`return ${hooks[name]}`, {
+      ...baseLocals,
+      locals
+    }, this);
+  }
+
+  if (ext === '.js') {
+    const pre = await runFn(code, {
+      ...baseLocals,
+      locals 
+    });
 
     return pre;
   }
 
   if (ext === '.ejs') {
-    if (before) code = `<% ${before} %>` + code;
     const pre = await ejs.render(
       code,
-      mergeDeepLeft({ include, moment, _: lodash }, locals),
+      mergeDeepLeft(baseLocals, locals),
       {
         async: true,
       }
     );
-    if (after)
-      return await runFn(after, {
-        include,
-        rethrow,
-        locals,
-        moment,
-        _: lodash,
-        $pre: pre,
-      });
     return pre;
   }
 

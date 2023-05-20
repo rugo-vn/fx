@@ -1,6 +1,6 @@
 import { spawnService } from '@rugo-vn/service';
 import { pack } from '@rugo-vn/service/src/wrap.js';
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 
 describe('Service test', function () {
   let service;
@@ -13,9 +13,8 @@ describe('Service test', function () {
         return await pack(() => opts.data);
       },
       settings: {
-        allows: ['calc'],
         hooks: {
-          after: 'return $pre + 1;',
+          greet: (async (name) => await this.call(name) + 1).toString()
         },
       },
     });
@@ -29,7 +28,7 @@ describe('Service test', function () {
       {
         entry: 'a.js',
         files: {
-          'a.js': 'return await call("calc")',
+          'a.js': 'return await greet("calc")',
         },
       },
       {
@@ -38,6 +37,26 @@ describe('Service test', function () {
     );
 
     expect(res).to.be.eq('hello1');
+  });
+
+  it('should not call from file', async () => {
+    try {
+      await service.call(
+        'run',
+        {
+          entry: 'a.js',
+          files: {
+            'a.js': 'return this.call("calc")',
+          },
+        },
+        {
+          data: 'hello',
+        }
+      );
+      assert.fail('should error');
+    } catch(err) {
+      expect(err).to.has.property('message', 'this.call is not a function');
+    }
   });
 
   it('should stop', async () => {
